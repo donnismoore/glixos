@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "packages": {
+    "helix": {
+      "flake": "github:helix-editor/helix",
+      "description": "Postmodern modal text editor (upstream; not glixos-packaged yet)"
+    },
+    "home-manager": {
+      "flake": "github:nix-community/home-manager",
+      "description": "Manage user environments with Nix (already pulled in by core)"
+    },
+    "nixpkgs": {
+      "flake": "github:NixOS/nixpkgs/nixos-unstable",
+      "description": "The Nix Packages collection (already pulled in by core)"
+    }
+  }
+}

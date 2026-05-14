@@ -6,6 +6,7 @@ import (
 
 	"github.com/glixos/glix/internal/manifest"
 	"github.com/glixos/glix/internal/nix"
+	"github.com/glixos/glix/internal/resolver"
 )
 
 func cmdAdd(args []string) error {
@@ -13,16 +14,19 @@ func cmdAdd(args []string) error {
 	host := fs.String("host", currentHostname(), "host whose manifest to mutate")
 	dir := fs.String("dir", "", "user-packages repo root (default: discovered)")
 	scopeFlag := fs.String("scope", "", "package scope: system or home (default from manifest)")
-	nameFlag := fs.String("name", "", "override package name (default: inferred from ref)")
+	nameFlag := fs.String("name", "", "override package name (default: inferred)")
 	apply := fs.Bool("apply", false, "run `nixos-rebuild switch` after staging")
 	dryRun := fs.Bool("dry-run", false, "print planned changes; do not write")
+	regURL := fs.String("registry-url", "", "override registry URL")
+	refresh := fs.Bool("refresh", false, "force refetch of the registry before resolving")
+	noNix := fs.Bool("no-nix-registry", false, "skip the `nix registry list` fallback")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 	if fs.NArg() != 1 {
-		return fmt.Errorf("usage: glix add <flake-ref> [flags]")
+		return fmt.Errorf("usage: glix add <ref-or-name> [flags]")
 	}
-	ref := fs.Arg(0)
+	input := fs.Arg(0)
 
 	r, err := resolveRepo(*dir)
 	if err != nil {
@@ -32,6 +36,26 @@ func cmdAdd(args []string) error {
 		return fmt.Errorf("host %q not found in %s (run `glix init --host=%s` first)", *host, r.Root, *host)
 	}
 
+	// Resolve short name → canonical URI via the chain. URIs pass through unchanged.
+	url, err := resolveRegistryURL(*dir, *host, *regURL)
+	if err != nil {
+		return err
+	}
+	reg, err := loadRegistry(url, *refresh)
+	if err != nil {
+		return err
+	}
+	opts := resolver.Options{Registry: reg}
+	if *noNix {
+		opts.NixRegistry = resolver.NoNixRegistry{}
+	} else {
+		opts.NixRegistry = resolver.NixCLI{}
+	}
+	res, err := resolver.Resolve(input, opts)
+	if err != nil {
+		return err
+	}
+
 	m, err := manifest.Load(r.ManifestPath(*host))
 	if err != nil {
 		return err
@@ -39,11 +63,16 @@ func cmdAdd(args []string) error {
 
 	name := *nameFlag
 	if name == "" {
-		n, ok := manifest.PackageNameFromRef(ref)
-		if !ok {
-			return fmt.Errorf("could not infer package name from %q; pass --name", ref)
+		switch res.Source {
+		case resolver.SourceURI:
+			n, ok := manifest.PackageNameFromRef(res.Ref)
+			if !ok {
+				return fmt.Errorf("could not infer package name from %q; pass --name", res.Ref)
+			}
+			name = n
+		default:
+			name = res.ShortName
 		}
-		name = n
 	}
 	if err := requireValidIdent("package name", name); err != nil {
 		return err
@@ -61,31 +90,45 @@ func cmdAdd(args []string) error {
 	}
 
 	pkg := manifest.Package{
-		Flake:   ref,
+		Flake:   res.Ref,
 		Scope:   scope,
 		Enabled: true,
 	}
 
 	if *dryRun {
-		fmt.Fprintf(os.Stdout, "would add package %q -> %s (scope=%s) at %s\n", name, ref, scope, r.ManifestPath(*host))
+		fmt.Fprintf(os.Stdout, "would add package %q -> %s (source=%s, scope=%s)\n", name, res.Ref, res.Source, scope)
 		return nil
+	}
+
+	snap, err := r.TakeSnapshot(*host)
+	if err != nil {
+		return err
 	}
 
 	m.Packages[name] = pkg
 	if err := manifest.Save(r.ManifestPath(*host), m); err != nil {
+		_ = snap.Restore()
 		return err
 	}
 	if err := regenerateFlake(r); err != nil {
+		_ = snap.Restore()
 		return err
 	}
 	if err := nix.FlakeLock(r.Root); err != nil {
-		return fmt.Errorf("nix flake lock: %w", err)
+		if rerr := snap.Restore(); rerr != nil {
+			return fmt.Errorf("nix flake lock failed (%w) and rollback also failed: %v", err, rerr)
+		}
+		return fmt.Errorf("nix flake lock failed; rolled back: %w", err)
 	}
-	if err := r.Commit(fmt.Sprintf("glix add %s: %s (%s, %s)", *host, name, ref, scope)); err != nil {
+	if err := r.Commit(fmt.Sprintf("glix add %s: %s (%s, %s, via %s)", *host, name, res.Ref, scope, res.Source)); err != nil {
 		return fmt.Errorf("git commit: %w", err)
 	}
 
-	fmt.Printf("added %s -> %s (scope=%s) to host %s\n", name, ref, scope, *host)
+	if res.Source == resolver.SourceURI {
+		fmt.Printf("added %s -> %s (scope=%s) to host %s\n", name, res.Ref, scope, *host)
+	} else {
+		fmt.Printf("added %s -> %s (scope=%s, via %s) to host %s\n", name, res.Ref, scope, res.Source, *host)
+	}
 
 	if *apply || m.Settings.AutoApply {
 		fmt.Println("applying with nixos-rebuild switch...")

@@ -20,6 +20,7 @@ var commands = []command{
 	{"add", "Add a package flake to the manifest", cmdAdd},
 	{"remove", "Remove a package from the manifest", cmdRemove},
 	{"list", "List packages in the manifest", cmdList},
+	{"search", "Search the glixos registry", cmdSearch},
 	{"rebuild", "Run nixos-rebuild against the user-packages flake", cmdRebuild},
 	{"version", "Print the glix version", cmdVersion},
 	{"help", "Show this help", nil},

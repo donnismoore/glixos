@@ -42,15 +42,25 @@ func cmdRemove(args []string) error {
 		return nil
 	}
 
+	snap, err := r.TakeSnapshot(*host)
+	if err != nil {
+		return err
+	}
+
 	delete(m.Packages, name)
 	if err := manifest.Save(r.ManifestPath(*host), m); err != nil {
+		_ = snap.Restore()
 		return err
 	}
 	if err := regenerateFlake(r); err != nil {
+		_ = snap.Restore()
 		return err
 	}
 	if err := nix.FlakeLock(r.Root); err != nil {
-		return fmt.Errorf("nix flake lock: %w", err)
+		if rerr := snap.Restore(); rerr != nil {
+			return fmt.Errorf("nix flake lock failed (%w) and rollback also failed: %v", err, rerr)
+		}
+		return fmt.Errorf("nix flake lock failed; rolled back: %w", err)
 	}
 	if err := r.Commit(fmt.Sprintf("glix remove %s: %s", *host, name)); err != nil {
 		return fmt.Errorf("git commit: %w", err)
