@@ -66,6 +66,13 @@ type Package struct {
 	// User, only meaningful when Scope == "home", routes the home module
 	// to a specific user. Empty means use Settings.PrimaryUser.
 	User string `toml:"user,omitempty"`
+	// Config is a flat string→string map serialized as
+	// [packages.<name>.config] and passed to the package's module via
+	// _module.args.glixConfig at evaluation time. Values are strings
+	// because TOML's permissive typing combined with glix set's CLI
+	// surface makes a typed schema not worth the round-trip pain;
+	// package modules cast as they see fit.
+	Config map[string]string `toml:"config,omitempty"`
 }
 
 // New returns a manifest with default settings and no packages.
@@ -161,6 +168,18 @@ func Encode(w io.Writer, m *Manifest) error {
 			fmt.Fprintf(w, "user    = %q\n", p.User)
 		}
 		fmt.Fprintln(w)
+		if len(p.Config) > 0 {
+			fmt.Fprintf(w, "[packages.%s.config]\n", tomlBareOrQuoted(name))
+			keys := make([]string, 0, len(p.Config))
+			for k := range p.Config {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			for _, k := range keys {
+				fmt.Fprintf(w, "%s = %q\n", tomlBareOrQuoted(k), p.Config[k])
+			}
+			fmt.Fprintln(w)
+		}
 	}
 	return nil
 }

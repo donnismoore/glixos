@@ -72,6 +72,41 @@ func TestRoundTrip_M6Fields(t *testing.T) {
 	}
 }
 
+func TestRoundTrip_Config(t *testing.T) {
+	m := New()
+	m.Packages["foo"] = Package{
+		Flake:   "github:o/r",
+		Scope:   ScopeSystem,
+		Enabled: true,
+		Config: map[string]string{
+			"message": "hi there",
+			"level":   "info",
+		},
+	}
+	var buf bytes.Buffer
+	if err := Encode(&buf, m); err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	path := filepath.Join(dir, "glix.toml")
+	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(m, got) {
+		t.Fatalf("config round-trip mismatch:\n  want %#v\n  got  %#v", m, got)
+	}
+	// Deterministic key order: level before message alphabetically.
+	out := buf.String()
+	iL, iM := indexOf(out, "level"), indexOf(out, "message")
+	if !(iL < iM) {
+		t.Fatalf("config keys not sorted:\n%s", out)
+	}
+}
+
 func TestDeterministicOrder(t *testing.T) {
 	m := New()
 	for _, n := range []string{"charlie", "alpha", "bravo"} {

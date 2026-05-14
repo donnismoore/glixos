@@ -78,7 +78,21 @@ func cmdSet(args []string) error {
 			}
 			pkg.User = v
 		default:
-			return fmt.Errorf("unknown field %q (want flake, scope, enabled, pin, user)", k)
+			if ck, ok := strings.CutPrefix(k, "config."); ok {
+				if ck == "" {
+					return fmt.Errorf("malformed config assignment %q (want config.<key>=<value>)", kv)
+				}
+				if v == "" {
+					delete(pkg.Config, ck)
+				} else {
+					if pkg.Config == nil {
+						pkg.Config = map[string]string{}
+					}
+					pkg.Config[ck] = v
+				}
+				continue
+			}
+			return fmt.Errorf("unknown field %q (want flake, scope, enabled, pin, user, or config.<key>)", k)
 		}
 	}
 

@@ -9,10 +9,13 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs = { self, nixpkgs }: {
-    homeModules.default = { pkgs, ... }: {
+    # glixConfig is injected by importManifest from [packages.<name>.config]
+    # in the host's glix.toml. It is a flat attrset of strings; this module
+    # treats every key as optional and supplies a default.
+    homeModules.default = { pkgs, glixConfig ? { }, ... }: {
       home.packages = [ pkgs.cowsay ];
       home.file.".glixos-greeting".text =
-        "Hello from a glixos package home module.\n";
+        (glixConfig.message or "Hello from a glixos package home module.") + "\n";
     };
   };
 }

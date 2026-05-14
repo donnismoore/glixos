@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/glixos/glix/internal/manifest"
 )
@@ -56,5 +57,16 @@ func cmdShow(args []string) error {
 		fmt.Printf("user    %s\n", user)
 	}
 	fmt.Printf("host    %s\n", *host)
+	if len(p.Config) > 0 {
+		fmt.Println("config")
+		keys := make([]string, 0, len(p.Config))
+		for k := range p.Config {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			fmt.Printf("  %s = %s\n", k, p.Config[k])
+		}
+	}
 	return nil
 }

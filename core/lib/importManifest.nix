@@ -65,13 +65,28 @@ let
     inputs.${name} or (throw
       "glix: manifest references package '${name}' but no matching flake input was found. Did you run `glix add` without rebuilding?");
 
-  resolveSystem = name: _:
-    let i = requireInput name;
-    in i.nixosModules.default or (mkSystemPkgModule i);
+  # withGlixConfig wraps an arbitrary module so that, when evaluated, the
+  # package's `[packages.<name>.config]` table is exposed as the
+  # `glixConfig` module argument. The wrapper is a module list so that any
+  # form the package module takes (function, attrset, list) keeps working.
+  withGlixConfig = cfg: mod: {
+    imports = [ mod ];
+    _module.args.glixConfig = cfg;
+  };
 
-  resolveHome = name: _:
-    let i = requireInput name;
-    in i.homeModules.default or (mkHomePkgModule i);
+  resolveSystem = name: p:
+    let
+      i = requireInput name;
+      base = i.nixosModules.default or (mkSystemPkgModule i);
+    in
+    withGlixConfig (p.config or { }) base;
+
+  resolveHome = name: p:
+    let
+      i = requireInput name;
+      base = i.homeModules.default or (mkHomePkgModule i);
+    in
+    withGlixConfig (p.config or { }) base;
 
   # Per-package home module, tagged with its target user.
   homeEntries = lib.mapAttrsToList
