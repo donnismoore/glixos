@@ -207,27 +207,35 @@ glixos/
 │   ├── flake.nix
 │   ├── modules/core/
 │   ├── modules/desktop/
-│   └── lib/importManifest.nix
+│   ├── lib/importManifest.nix
+│   └── hosts/vm/             # internal smoketest host
 ├── glix/                     # Go CLI
 │   ├── go.mod
 │   ├── cmd/glix/
-│   └── internal/...
+│   └── internal/
+│       ├── templates/        # embedded init templates (.tmpl)
+│       ├── manifest/         # glix.toml read/write
+│       ├── flake/            # anchored-region patcher
+│       ├── repo/             # user-packages repo handle, git auto-commit
+│       ├── nix/              # nix / nixos-rebuild wrappers
+│       └── ui/               # table renderer
 ├── registry/                 # seed registry (later moved to its own repo)
 │   └── registry.json
-├── templates/                # files glix init drops into user repo
-│   ├── flake.nix.tmpl
-│   ├── system.nix
-│   └── home.nix
 ├── examples/
-│   └── pkg-hello/            # reference glixos-compatible flake
+│   ├── pkg-hello/            # reference flake (fallback path)
+│   ├── pkg-greeting/         # reference flake (homeModule path)
+│   └── user-packages/        # hand-written reference deployment
 └── docs/
     ├── architecture.md
+    ├── decisions.md
     ├── flake-contract.md
     └── glix-cli.md
 ```
 
-The `glix` binary is packaged as a Nix derivation inside `core/` and included
-in `modules/core/`, so a glixos system always has `glix` available.
+The init-time templates live inside `glix/internal/templates/` so they can be
+embedded into the `glix` binary via `//go:embed`. The `glix` binary will be
+packaged as a Nix derivation inside `core/` (deferred until after M3) and
+included in `modules/core/`, so a glixos system always has `glix` available.
 
 ## 9. Milestones
 
