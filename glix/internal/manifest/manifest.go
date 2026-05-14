@@ -45,6 +45,13 @@ type Settings struct {
 	DefaultScope Scope  `toml:"default_scope"`
 	AutoApply    bool   `toml:"auto_apply"`
 	RegistryURL  string `toml:"registry_url,omitempty"`
+	// System is the Nix system tuple this host targets, e.g.
+	// "x86_64-linux". Empty means inherit the default ("x86_64-linux").
+	System string `toml:"system,omitempty"`
+	// PrimaryUser is the user account home-scoped packages target when
+	// they do not specify an explicit owner. Empty means inherit the
+	// importManifest defaultUser.
+	PrimaryUser string `toml:"primary_user,omitempty"`
 }
 
 // Package describes one entry under [packages.<name>].
@@ -52,9 +59,13 @@ type Package struct {
 	Flake   string `toml:"flake"`
 	Scope   Scope  `toml:"scope"`
 	Enabled bool   `toml:"enabled"`
-	Pin     string `toml:"pin,omitempty"`
-	// Config is intentionally omitted in M3. It will be added once
-	// `glix set` lands and we settle the serialization shape.
+	// Pin, if non-empty, is appended to Flake as `?rev=<pin>` when the
+	// input is rendered. Use for sources where revision-locking through
+	// the flake URI is meaningful (github/gitlab/sourcehut).
+	Pin string `toml:"pin,omitempty"`
+	// User, only meaningful when Scope == "home", routes the home module
+	// to a specific user. Empty means use Settings.PrimaryUser.
+	User string `toml:"user,omitempty"`
 }
 
 // New returns a manifest with default settings and no packages.
@@ -120,6 +131,12 @@ func Encode(w io.Writer, m *Manifest) error {
 	fmt.Fprintln(w, "[settings]")
 	fmt.Fprintf(w, "default_scope = %q\n", string(m.Settings.DefaultScope))
 	fmt.Fprintf(w, "auto_apply    = %t\n", m.Settings.AutoApply)
+	if m.Settings.System != "" {
+		fmt.Fprintf(w, "system        = %q\n", m.Settings.System)
+	}
+	if m.Settings.PrimaryUser != "" {
+		fmt.Fprintf(w, "primary_user  = %q\n", m.Settings.PrimaryUser)
+	}
 	if m.Settings.RegistryURL != "" {
 		fmt.Fprintf(w, "registry_url  = %q\n", m.Settings.RegistryURL)
 	}
@@ -139,6 +156,9 @@ func Encode(w io.Writer, m *Manifest) error {
 		fmt.Fprintf(w, "enabled = %t\n", p.Enabled)
 		if p.Pin != "" {
 			fmt.Fprintf(w, "pin     = %q\n", p.Pin)
+		}
+		if p.User != "" {
+			fmt.Fprintf(w, "user    = %q\n", p.User)
 		}
 		fmt.Fprintln(w)
 	}

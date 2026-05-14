@@ -78,6 +78,30 @@ func TestReplaceRegion_MissingMarker(t *testing.T) {
 	}
 }
 
+func TestRenderInputs_Pin(t *testing.T) {
+	cases := []struct {
+		name, flake, pin, wantURL string
+	}{
+		{"no pin", "github:o/r", "", `"github:o/r"`},
+		{"github pin", "github:o/r", "deadbeef", `"github:o/r?rev=deadbeef"`},
+		{"flake with query", "github:o/r?dir=x", "deadbeef", `"github:o/r?dir=x&rev=deadbeef"`},
+		{"already pinned", "github:o/r?rev=cafe", "deadbeef", `"github:o/r?rev=cafe"`},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			m := manifest.New()
+			m.Packages["x"] = manifest.Package{
+				Flake: c.flake, Pin: c.pin,
+				Scope: manifest.ScopeSystem, Enabled: true,
+			}
+			got := RenderInputs(m)
+			if !strings.Contains(got, "url = "+c.wantURL+";") {
+				t.Errorf("missing url = %s; in:\n%s", c.wantURL, got)
+			}
+		})
+	}
+}
+
 func TestRenderInputs_AlphabeticalOrder(t *testing.T) {
 	m := manifest.New()
 	m.Packages["zeta"] = manifest.Package{Flake: "z", Scope: manifest.ScopeSystem, Enabled: true}

@@ -70,8 +70,15 @@ func cmdSet(args []string) error {
 			pkg.Enabled = b
 		case "pin":
 			pkg.Pin = v
+		case "user":
+			if v != "" {
+				if err := requireValidIdent("user", v); err != nil {
+					return err
+				}
+			}
+			pkg.User = v
 		default:
-			return fmt.Errorf("unknown field %q (want flake, scope, enabled, pin)", k)
+			return fmt.Errorf("unknown field %q (want flake, scope, enabled, pin, user)", k)
 		}
 	}
 

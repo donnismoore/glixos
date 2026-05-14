@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const version = "0.1.0-m5"
+const version = "0.1.0-m6"
 
 type command struct {
 	name    string
@@ -28,6 +28,7 @@ var commands = []command{
 	{"update", "Update flake inputs (all or selected)", cmdUpdate},
 	{"rebuild", "Run nixos-rebuild against the user-packages flake", cmdRebuild},
 	{"rollback", "Revert the last manifest commit and relock", cmdRollback},
+	{"gc", "Run nix-collect-garbage (optionally with -d)", cmdGC},
 	{"doctor", "Run environment and repo health checks", cmdDoctor},
 	{"version", "Print the glix version", cmdVersion},
 	{"help", "Show this help", nil},

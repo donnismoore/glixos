@@ -1,5 +1,5 @@
 # Pure function that turns a glix.toml manifest + a set of flake inputs into
-# two lists of modules: one for NixOS, one for home-manager.
+# module lists ready to be wired into a NixOS configuration.
 #
 # Called from the user-packages flake, e.g.:
 #
@@ -7,6 +7,7 @@
 #     m = glixos-core.lib.importManifest {
 #       manifestPath = ./hosts/${hostname}/glix.toml;
 #       inherit inputs;
+#       defaultUser = "donnis";
 #     };
 #   in {
 #     nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
@@ -15,10 +16,19 @@
 #     };
 #   }
 #
+# Output attributes:
+#   manifest          — the raw decoded TOML
+#   systemModules     — list of nixos modules (one per enabled scope=system pkg)
+#   homeModules       — flat list of home-manager modules (legacy single-user path)
+#   homeModulesByUser — { <user> = [ module ... ]; ... } keyed by target user
+#                       (Package.user, falling back to settings.primary_user,
+#                       falling back to defaultUser).
+#
 # This file is *static*. glix never writes here.
 { lib }:
 { manifestPath
 , inputs ? { }
+, defaultUser ? "user"
 }:
 let
   raw =
@@ -32,6 +42,9 @@ let
     if v == 1 then raw
     else throw "glix: unsupported manifest schema ${toString v} (expected 1) at ${toString manifestPath}";
 
+  settings = manifest.settings or { };
+  primaryUser = settings.primary_user or defaultUser;
+
   enabled = lib.filterAttrs (_: p: (p.enabled or true)) (manifest.packages or { });
 
   byScope = scope:
@@ -40,7 +53,6 @@ let
   systemPkgs = byScope "system";
   homePkgs = byScope "home";
 
-  # Fallback wrapper when a flake doesn't ship its own module.
   mkSystemPkgModule = input: { pkgs, ... }: {
     environment.systemPackages = [ input.packages.${pkgs.system}.default ];
   };
@@ -60,9 +72,23 @@ let
   resolveHome = name: _:
     let i = requireInput name;
     in i.homeModules.default or (mkHomePkgModule i);
+
+  # Per-package home module, tagged with its target user.
+  homeEntries = lib.mapAttrsToList
+    (name: p: {
+      user = p.user or primaryUser;
+      module = resolveHome name p;
+    })
+    homePkgs;
+
+  homeModulesByUser = lib.foldl'
+    (acc: e: acc // { ${e.user} = (acc.${e.user} or [ ]) ++ [ e.module ]; })
+    { }
+    homeEntries;
 in
 {
   inherit manifest;
   systemModules = lib.mapAttrsToList resolveSystem systemPkgs;
-  homeModules = lib.mapAttrsToList resolveHome homePkgs;
+  homeModules = map (e: e.module) homeEntries;
+  inherit homeModulesByUser;
 }

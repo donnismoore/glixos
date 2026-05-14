@@ -59,7 +59,7 @@ func cmdInit(args []string) error {
 
 	// Write flake.nix only if absent (existing-repo init re-uses the file).
 	if _, err := os.Stat(r.FlakePath()); errors.Is(err, os.ErrNotExist) {
-		if err := writeFile(r.FlakePath(), []byte(templates.FlakeNix(*coreURL)), 0o644); err != nil {
+		if err := writeFile(r.FlakePath(), []byte(templates.FlakeNix(*coreURL, *user)), 0o644); err != nil {
 			return err
 		}
 	}
@@ -72,6 +72,17 @@ func cmdInit(args []string) error {
 		return err
 	}
 	if err := writeFile(r.ManifestPath(*host), []byte(templates.GlixToml()), 0o644); err != nil {
+		return err
+	}
+
+	// Stamp the new manifest with this host's system tuple and primary user.
+	m, err := manifest.Load(r.ManifestPath(*host))
+	if err != nil {
+		return err
+	}
+	m.Settings.System = *system
+	m.Settings.PrimaryUser = *user
+	if err := manifest.Save(r.ManifestPath(*host), m); err != nil {
 		return err
 	}
 
@@ -116,29 +127,31 @@ func writeFile(path string, data []byte, mode os.FileMode) error {
 
 // regenerateFlake rewrites the glix-managed regions of flake.nix from the
 // current state of the repo (manifests across all hosts + host directory
-// listing).
+// listing). Each host's `[settings] system` field controls its row in the
+// hosts region; missing values default to x86_64-linux.
 func regenerateFlake(r *repo.Repo) error {
 	hosts, err := r.ListHosts()
 	if err != nil {
 		return err
 	}
 	entries := make([]flake.HostEntry, 0, len(hosts))
-	for _, h := range hosts {
-		entries = append(entries, flake.HostEntry{Name: h, System: "x86_64-linux"})
-	}
 
-	// Inputs are the union of all hosts' manifests. M3 only ever has one
-	// host per init, but unioning here is forward-compatible.
 	merged := manifest.New()
 	for _, h := range hosts {
 		mp := r.ManifestPath(h)
 		if _, err := os.Stat(mp); err != nil {
+			entries = append(entries, flake.HostEntry{Name: h, System: "x86_64-linux"})
 			continue
 		}
 		m, err := manifest.Load(mp)
 		if err != nil {
 			return fmt.Errorf("load %s: %w", mp, err)
 		}
+		sys := m.Settings.System
+		if sys == "" {
+			sys = "x86_64-linux"
+		}
+		entries = append(entries, flake.HostEntry{Name: h, System: sys})
 		for name, pkg := range m.Packages {
 			merged.Packages[name] = pkg
 		}

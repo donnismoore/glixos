@@ -15,6 +15,8 @@ func cmdAdd(args []string) error {
 	dir := fs.String("dir", "", "user-packages repo root (default: discovered)")
 	scopeFlag := fs.String("scope", "", "package scope: system or home (default from manifest)")
 	nameFlag := fs.String("name", "", "override package name (default: inferred)")
+	userFlag := fs.String("user", "", "target user for scope=home (default: settings.primary_user)")
+	pinFlag := fs.String("pin", "", "lock to this revision via ?rev=<pin> (github/gitlab/sourcehut)")
 	apply := fs.Bool("apply", false, "run `nixos-rebuild switch` after staging")
 	dryRun := fs.Bool("dry-run", false, "print planned changes; do not write")
 	regURL := fs.String("registry-url", "", "override registry URL")
@@ -89,10 +91,21 @@ func cmdAdd(args []string) error {
 		return fmt.Errorf("invalid --scope %q (want system or home)", scope)
 	}
 
+	if *userFlag != "" && scope != manifest.ScopeHome {
+		return fmt.Errorf("--user only applies to scope=home (got scope=%s)", scope)
+	}
+	if *userFlag != "" {
+		if err := requireValidIdent("user", *userFlag); err != nil {
+			return err
+		}
+	}
+
 	pkg := manifest.Package{
 		Flake:   res.Ref,
 		Scope:   scope,
 		Enabled: true,
+		Pin:     *pinFlag,
+		User:    *userFlag,
 	}
 
 	if *dryRun {

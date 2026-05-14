@@ -45,6 +45,16 @@ func cmdShow(args []string) error {
 	if p.Pin != "" {
 		fmt.Printf("pin     %s\n", p.Pin)
 	}
+	if p.Scope == manifest.ScopeHome {
+		user := p.User
+		if user == "" {
+			user = m.Settings.PrimaryUser
+			if user == "" {
+				user = "(default)"
+			}
+		}
+		fmt.Printf("user    %s\n", user)
+	}
 	fmt.Printf("host    %s\n", *host)
 	return nil
 }

@@ -18,9 +18,11 @@ var hostNix string
 var glixToml string
 
 // FlakeNix returns the rendered top-level flake.nix.
-// Placeholders: @CORE_URL@.
-func FlakeNix(coreURL string) string {
-	return strings.ReplaceAll(flakeNix, "@CORE_URL@", coreURL)
+// Placeholders: @CORE_URL@, @USER@ (used as importManifest defaultUser).
+func FlakeNix(coreURL, defaultUser string) string {
+	s := strings.ReplaceAll(flakeNix, "@CORE_URL@", coreURL)
+	s = strings.ReplaceAll(s, "@USER@", defaultUser)
+	return s
 }
 
 // HostNix returns the rendered hosts/<host>/default.nix.

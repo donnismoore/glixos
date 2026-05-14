@@ -21,13 +21,16 @@
     initialPassword = "changeme";
   };
 
-  # Wire home-scope packages from the manifest into home-manager.
+  # Wire home-scope packages from the manifest into home-manager. Each
+  # entry in manifest.homeModulesByUser becomes a home-manager.users.<user>
+  # imports list. To install for additional users, add them to users.users
+  # above (or via your own modules) and use `glix add --user <name>`.
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    users."@USER@".imports = manifest.homeModules ++ [
-      { home.stateVersion = "24.11"; }
-    ];
+    users = lib.mapAttrs
+      (_: mods: { imports = mods ++ [ { home.stateVersion = "24.11"; } ]; })
+      manifest.homeModulesByUser;
   };
 
   system.stateVersion = "24.11";

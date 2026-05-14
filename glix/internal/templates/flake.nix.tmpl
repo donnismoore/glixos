@@ -33,6 +33,7 @@
           manifest = glixos-core.lib.importManifest {
             manifestPath = ./hosts/${hostName}/glix.toml;
             inherit inputs;
+            defaultUser = "@USER@";
           };
         in
         lib.nixosSystem {

@@ -42,6 +42,36 @@ func TestRoundTrip(t *testing.T) {
 	}
 }
 
+func TestRoundTrip_M6Fields(t *testing.T) {
+	m := New()
+	m.Settings.System = "aarch64-linux"
+	m.Settings.PrimaryUser = "alice"
+	m.Packages["foo"] = Package{
+		Flake:   "github:o/r",
+		Scope:   ScopeHome,
+		Enabled: true,
+		Pin:     "deadbeef",
+		User:    "bob",
+	}
+
+	var buf bytes.Buffer
+	if err := Encode(&buf, m); err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	path := filepath.Join(dir, "glix.toml")
+	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(m, got) {
+		t.Fatalf("M6-field round-trip mismatch:\n  want %#v\n  got  %#v", m, got)
+	}
+}
+
 func TestDeterministicOrder(t *testing.T) {
 	m := New()
 	for _, n := range []string{"charlie", "alpha", "bravo"} {

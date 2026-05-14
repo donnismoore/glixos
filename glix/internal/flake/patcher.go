@@ -106,10 +106,28 @@ func RenderInputs(m *manifest.Manifest) string {
 		// Nix attribute names are constrained; we already sanitize package
 		// names elsewhere, but quote defensively.
 		fmt.Fprintf(&b, "%s = {\n", nixAttr(name))
-		fmt.Fprintf(&b, "  url = %q;\n", p.Flake)
+		fmt.Fprintf(&b, "  url = %q;\n", applyPin(p.Flake, p.Pin))
 		b.WriteString("};\n")
 	}
 	return b.String()
+}
+
+// applyPin folds a pinned revision into a flake URI by appending
+// `?rev=<pin>` (or `&rev=<pin>` if the URI already has a query string).
+// Returns the URI unchanged when pin is empty or the URI already pins a
+// rev itself.
+func applyPin(flake, pin string) string {
+	if pin == "" {
+		return flake
+	}
+	if strings.Contains(flake, "?rev=") || strings.Contains(flake, "&rev=") {
+		return flake
+	}
+	sep := "?"
+	if strings.Contains(flake, "?") {
+		sep = "&"
+	}
+	return flake + sep + "rev=" + pin
 }
 
 // RenderHosts produces the body of the glix-managed hosts region. M3 only

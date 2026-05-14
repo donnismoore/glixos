@@ -56,6 +56,16 @@ func Version() (string, error) {
 	return strings.TrimSpace(strings.SplitN(stdout.String(), "\n", 2)[0]), nil
 }
 
+// CollectGarbage runs `nix-collect-garbage`. When deleteOld is true,
+// passes `-d` to also delete old generations.
+func CollectGarbage(deleteOld bool) error {
+	args := []string{}
+	if deleteOld {
+		args = append(args, "-d")
+	}
+	return run("", "nix-collect-garbage", args...)
+}
+
 // HasFlakes reports whether `nix flake --help` succeeds, i.e. the flakes
 // experimental feature is available to this user.
 func HasFlakes() bool {
