@@ -1,0 +1,21 @@
+# M2 demo manifest. Hand-written; in production glix owns this file.
+#
+# - pkg-hello uses the fallback path (no module in the flake) and ends up
+#   in environment.systemPackages.
+# - pkg-greeting uses the homeModules.default path and is imported into
+#   the user's home-manager config.
+schema = 1
+
+[settings]
+default_scope = "system"
+auto_apply    = false
+
+[packages.pkg-hello]
+flake   = "path:../../../pkg-hello"
+scope   = "system"
+enabled = true
+
+[packages.pkg-greeting]
+flake   = "path:../../../pkg-greeting"
+scope   = "home"
+enabled = true

@@ -1,0 +1,34 @@
+# Template for hosts/<HOSTNAME>/default.nix.
+#
+# `glix init --host <HOSTNAME>` substitutes the placeholders. After init this
+# file belongs to the user — `glix` will never edit it again.
+{ lib, manifest, modulesPath, ... }:
+{
+  networking.hostName = "@HOSTNAME@";
+
+  # Bootloader and disk: replace with values that match your hardware.
+  boot.loader.systemd-boot.enable = lib.mkDefault true;
+  boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
+
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/nixos";
+    fsType = "ext4";
+  };
+
+  users.users."@USER@" = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "networkmanager" ];
+    initialPassword = "changeme";
+  };
+
+  # Wire home-scope packages from the manifest into home-manager.
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users."@USER@".imports = manifest.homeModules ++ [
+      { home.stateVersion = "24.11"; }
+    ];
+  };
+
+  system.stateVersion = "24.11";
+}

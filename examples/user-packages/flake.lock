@@ -1,0 +1,99 @@
+{
+  "nodes": {
+    "glixos-core": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "../../core",
+        "type": "path"
+      },
+      "original": {
+        "path": "../../core",
+        "type": "path"
+      },
+      "parent": []
+    },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778706808,
+        "narHash": "sha256-ihH1UnI6nYSOkjAg4QsOadg6sp2LxXnWO9urPbo3/hw=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "9760b31dab3016fc6e422ca241cfeac605fb89c9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1778443072,
+        "narHash": "sha256-zi7/fsqM/kFdNuED//4WOCUtezGtKKqRNORjMvfwjnA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da5ad661ba4e5ef59ba743f0d112cbc30e474f32",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "pkg-greeting": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "../pkg-greeting",
+        "type": "path"
+      },
+      "original": {
+        "path": "../pkg-greeting",
+        "type": "path"
+      },
+      "parent": []
+    },
+    "pkg-hello": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "../pkg-hello",
+        "type": "path"
+      },
+      "original": {
+        "path": "../pkg-hello",
+        "type": "path"
+      },
+      "parent": []
+    },
+    "root": {
+      "inputs": {
+        "glixos-core": "glixos-core",
+        "home-manager": "home-manager",
+        "nixpkgs": "nixpkgs",
+        "pkg-greeting": "pkg-greeting",
+        "pkg-hello": "pkg-hello"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
