@@ -34,7 +34,7 @@ Flags:
 
 | Flag        | Default                          | Meaning                                       |
 |-------------|----------------------------------|-----------------------------------------------|
-| `--host`    | `$(hostname)`                    | Hosts/<NAME>/ directory to create             |
+| `--host`    | `$(hostname)`                    | `hosts/<name>/` directory to create           |
 | `--user`    | `$USER`                          | Primary user for home-scope packages          |
 | `--system`  | `x86_64-linux`                   | Nix system tuple for this host                |
 | `--dir`     | `$XDG_CONFIG_HOME/glixos`        | Repo root                                     |
