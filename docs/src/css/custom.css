@@ -1,0 +1,27 @@
+/**
+ * glixos doc-site theme overrides. Kept minimal to stay close to the
+ * Docusaurus defaults; tune later.
+ */
+
+:root {
+  --ifm-color-primary: #5b8def;
+  --ifm-color-primary-dark: #3b73e8;
+  --ifm-color-primary-darker: #2d68e5;
+  --ifm-color-primary-darkest: #1f4fb8;
+  --ifm-color-primary-light: #7ba2f1;
+  --ifm-color-primary-lighter: #8eb0f3;
+  --ifm-color-primary-lightest: #b8cbf7;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #7ba2f1;
+  --ifm-color-primary-dark: #5b8def;
+  --ifm-color-primary-darker: #4a80ec;
+  --ifm-color-primary-darkest: #2e64d4;
+  --ifm-color-primary-light: #9bb9f4;
+  --ifm-color-primary-lighter: #abc4f5;
+  --ifm-color-primary-lightest: #d0dcfa;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
