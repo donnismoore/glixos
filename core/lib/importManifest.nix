@@ -67,12 +67,24 @@ let
 
   # withGlixConfig wraps an arbitrary module so that, when evaluated, the
   # package's `[packages.<name>.config]` table is exposed as the
-  # `glixConfig` module argument. The wrapper is a module list so that any
-  # form the package module takes (function, attrset, list) keeps working.
-  withGlixConfig = cfg: mod: {
-    imports = [ mod ];
-    _module.args.glixConfig = cfg;
-  };
+  # `glixConfig` module argument.
+  #
+  # Per-module scoping: we cannot use `_module.args.glixConfig = cfg` because
+  # that arg is a single user-wide (or system-wide) value — multiple
+  # sibling modules (e.g. several home-scope packages for one user) would
+  # each define it, producing "defined multiple times" collisions on the
+  # `raw`-typed `_module.args` attribute.
+  #
+  # Instead, when mod is a function we build a wrapper function whose
+  # functionArgs are the standard NixOS module args (config/lib/pkgs/options)
+  # — these are always populated by the module evaluator — and we forward
+  # to mod with `glixConfig = cfg` merged in. The loader never tries to
+  # resolve `glixConfig` from `_module.args`, so siblings cannot collide.
+  withGlixConfig = cfg: mod:
+    if builtins.isFunction mod
+    then { config, lib, pkgs, options, ... }@args:
+      mod (args // { glixConfig = cfg; })
+    else mod;
 
   resolveSystem = name: p:
     let
