@@ -27,7 +27,7 @@ initialized glixos user-packages repo at /home/alice/.config/glixos
   host:   laptop
   user:   alice
   system: x86_64-linux
-  core:   github:glixos/glixos?dir=core
+  core:   github:powerreddude/glixos
 ```
 
 Flags:
@@ -38,7 +38,7 @@ Flags:
 | `--user`    | `$USER`                          | Primary user for home-scope packages          |
 | `--system`  | `x86_64-linux`                   | Nix system tuple for this host                |
 | `--dir`     | `$XDG_CONFIG_HOME/glixos`        | Repo root                                     |
-| `--core`    | `github:glixos/glixos?dir=core`  | Flake URL for `glixos-core`                   |
+| `--core`    | `github:powerreddude/glixos`     | Flake URL for the glixos repo                 |
 
 ## 2. Add a package
 

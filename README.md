@@ -25,21 +25,21 @@
 
 ### 1. Install `glix`
 
-From source:
+On an existing glixos host, `nixosModules.glixos` already installs `glix`
+into `environment.systemPackages`; rebuild and you're done. To get
+`glix` on a machine that isn't a glixos host yet, pick one:
 
 ```bash
+# Run on demand (no install).
+nix run github:powerreddude/glixos -- version
+
+# Build from source.
 git clone https://github.com/powerreddude/glixos.git
 cd glixos/glix
 go build -o glix ./cmd/glix
 sudo install -m 0755 glix /usr/local/bin/glix
 glix version
-# → 0.1.0-m7
-```
-
-Or run on demand:
-
-```bash
-nix run github:powerreddude/glixos?dir=glix -- version
+# → glix 0.1.0-m7 (<commit>)
 ```
 
 `glix` requires Nix 2.18+ with `nix-command` and `flakes` enabled, plus
@@ -91,7 +91,8 @@ goes into more detail.
 
 ```
 glixos/
-├── core/                # glixos-core: the OS layer flake
+├── flake.nix            # repo-root flake: nixosModules, lib, packages.glix
+├── core/                # the OS layer (modules, lib, smoke-test host)
 ├── glix/                # the Go CLI
 ├── registry/            # default registry (registry.json)
 ├── examples/            # reference package flakes

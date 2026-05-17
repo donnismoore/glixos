@@ -26,7 +26,7 @@ glix init [--host=<name>] [--user=<name>] [--system=<tuple>]
 | `--user`   | `$USER`                          | Primary user (`Settings.primary_user`)   |
 | `--system` | `x86_64-linux`                   | Nix system tuple                         |
 | `--dir`    | `$XDG_CONFIG_HOME/glixos`        | Repo root                                |
-| `--core`   | `github:glixos/glixos?dir=core`  | `glixos-core` flake URL                  |
+| `--core`   | `github:powerreddude/glixos`     | glixos repo flake URL                    |
 
 `glix init` is **idempotent for new hosts**. Running it again with a
 different `--host` on an existing repo adds that host without touching the
@@ -161,7 +161,10 @@ remove old generations.
 
 ### `glix version`
 
-Prints the CLI version (e.g. `0.1.0-m7`).
+Prints the CLI version and the commit it was built from
+(e.g. `glix 0.1.0-m7 (abc1234)`). `glix --version` and `glix -v` are
+aliases. When `glix` is built outside Nix (`go build` directly) the
+commit field reads `unknown`.
 
 ### `glix help`
 
