@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/glixos/glix/internal/flake"
 	"github.com/glixos/glix/internal/manifest"
 	"github.com/glixos/glix/internal/nix"
 	"github.com/glixos/glix/internal/resolver"
@@ -22,6 +23,7 @@ func cmdAdd(args []string) error {
 	regURL := fs.String("registry-url", "", "override registry URL")
 	refresh := fs.Bool("refresh", false, "force refetch of the registry before resolving")
 	noNix := fs.Bool("no-nix-registry", false, "skip the `nix registry list` fallback")
+	allowLocal := fs.Bool("allow-local-path", false, "permit an absolute local-path flake ref (path:/file:/absolute); for testing against a local checkout only")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -56,6 +58,11 @@ func cmdAdd(args []string) error {
 	res, err := resolver.Resolve(input, opts)
 	if err != nil {
 		return err
+	}
+	if !*allowLocal && flake.IsAbsoluteLocalRef(res.Ref) {
+		return fmt.Errorf(
+			"refusing to add %q: it resolves to an absolute local-path flake ref, which bakes a machine-specific path into your committed flake.nix and breaks every downstream clone. Pass --allow-local-path if you really intend this (e.g. for local development).",
+			res.Ref)
 	}
 
 	m, err := manifest.Load(r.ManifestPath(*host))

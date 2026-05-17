@@ -21,6 +21,7 @@ func cmdInit(args []string) error {
 	system := fs.String("system", "x86_64-linux", "Nix system tuple")
 	dir := fs.String("dir", "", "target directory (default: $XDG_CONFIG_HOME/glixos)")
 	coreURL := fs.String("core", defaultCoreURL, "flake URL for glixos-core")
+	allowLocalCore := fs.Bool("allow-local-core", false, "permit --core to be a local-path ref (path:/file:/absolute); for contributors building against a local glixos checkout")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -29,6 +30,13 @@ func cmdInit(args []string) error {
 	}
 	if err := requireValidIdent("user", *user); err != nil {
 		return err
+	}
+	if !*allowLocalCore {
+		if _, isLocal := flake.LocalPath(*coreURL); isLocal {
+			return fmt.Errorf(
+				"refusing --core=%q: local-path flake refs bake a machine-specific path into the generated flake.nix and break every downstream clone. Use a portable ref (e.g. %q), or pass --allow-local-core if you really want this (typically only for glixos contributor work)",
+				*coreURL, defaultCoreURL)
+		}
 	}
 
 	root := *dir
