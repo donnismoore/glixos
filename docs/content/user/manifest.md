@@ -35,11 +35,41 @@ schema = 1
 
 | Key       | Type            | Required | Notes                                                                            |
 |-----------|-----------------|----------|----------------------------------------------------------------------------------|
-| `flake`   | string          | yes      | Flake reference. Anything `nix` accepts.                                         |
+| `flake`   | string          | yes      | Flake reference. Anything `nix` accepts. See [Local-path refs](#local-path-refs) before using `path:` / `file:`. |
 | `scope`   | `system`\|`home`| yes      | Where to install the package.                                                    |
 | `enabled` | bool            | yes      | If false, the package stays in the manifest but is excluded from module output.  |
 | `pin`     | string          | no       | Folded into the flake URI as `?rev=<pin>`. Github/Gitlab/Sourcehut style refs.   |
 | `user`    | string          | no       | Only meaningful for `scope = "home"`. Empty means use `Settings.primary_user`.   |
+
+### Local-path refs
+
+`flake` accepts any reference Nix accepts, including `path:/abs/dir`,
+`path:./relative`, and `file://…`. These are **non-portable**: the path is
+baked verbatim into the generated `flake.nix` and resolved on whatever
+machine runs `nixos-rebuild`, so a manifest committed with
+`flake = "path:/home/alice/code/pkg-greeting"` will break every other
+clone with `error: path '/home/alice/code/pkg-greeting' does not exist`.
+
+To prevent that mistake, `glix add` refuses absolute local-path refs
+unless you pass `--allow-local-path`:
+
+```sh
+# rejected — bakes a machine-specific path into your committed flake.nix
+glix add path:/home/alice/code/pkg-greeting
+
+# explicit opt-in — appropriate while iterating on a local checkout
+glix add --allow-local-path path:/home/alice/code/pkg-greeting
+```
+
+`glix doctor` also warns about any committed input whose path is absolute
+or resolves outside the user-packages repo, so a hand-edited manifest
+with the same problem still gets flagged.
+
+The escape hatch exists because pointing a manifest entry at a working
+checkout is the natural workflow when *developing* a package — you want
+edits to take effect on the next `nixos-rebuild` without a push/pull
+cycle. Once the package is published somewhere durable (GitHub, your own
+git host, a tarball URL), switch the entry to that ref before committing.
 
 ### `[packages.<name>.config]`
 
@@ -77,7 +107,7 @@ enabled = true
 pin     = "da5ad661ba4e5ef59ba743f0d112cbc30e474f32"
 
 [packages.greeting]
-flake   = "path:/home/alice/code/pkg-greeting"
+flake   = "github:powerreddude/glixos?dir=examples/pkg-greeting"
 scope   = "home"
 enabled = true
 user    = "alice"

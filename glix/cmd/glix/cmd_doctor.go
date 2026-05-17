@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/glixos/glix/internal/flake"
 	"github.com/glixos/glix/internal/manifest"
 	"github.com/glixos/glix/internal/nix"
 )
@@ -75,6 +77,25 @@ func cmdDoctor(args []string) error {
 		check("flake.nix", "FAIL", err.Error())
 	} else {
 		check("flake.nix", "OK", r.FlakePath())
+		if b, err := os.ReadFile(r.FlakePath()); err == nil {
+			var bad []string
+			for _, u := range flake.ScanInputURLs(string(b)) {
+				escapes, isLocal := flake.EscapesRoot(u, r.Root, r.Root)
+				if !isLocal {
+					continue
+				}
+				if escapes || flake.IsAbsoluteLocalRef(u) {
+					bad = append(bad, u)
+				}
+			}
+			switch len(bad) {
+			case 0:
+				check("inputs", "OK", "no non-portable local-path inputs")
+			default:
+				check("inputs", "WARN",
+					"non-portable path input(s) — these won't resolve on other machines: "+strings.Join(bad, ", "))
+			}
+		}
 	}
 	lockPath := filepath.Join(r.Root, "flake.lock")
 	if _, err := os.Stat(lockPath); err != nil {
