@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://powerreddude.github.io/glixos/
+    about: User guide, contributor guide, and ADRs.
+  - name: Discussions
+    url: https://github.com/powerreddude/glixos/discussions
+    about: Questions, ideas, and conversations that aren't bug reports yet.
