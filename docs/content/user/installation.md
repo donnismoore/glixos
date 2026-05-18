@@ -5,13 +5,16 @@ sidebar_position: 2
 
 # Installation
 
-glixos is two things you install separately:
+glixos ships everything from one flake at `github:powerreddude/glixos`:
 
 - **`glix`** — the Go CLI you run from your shell.
-- **`glixos-core`** — the OS layer, pulled in as a flake input by the
-  user-packages repo `glix init` creates.
+- **`nixosModules.glixos`** — the OS layer, pulled in as a flake input
+  by the user-packages repo `glix init` creates. It installs `glix`
+  itself into `environment.systemPackages`, so once a glixos host is up
+  it always has the CLI.
 
-You install `glix` first; it bootstraps the rest.
+You install `glix` first to bootstrap. After the first rebuild, the
+module keeps it in sync.
 
 ## Requirements
 
@@ -28,7 +31,37 @@ You install `glix` first; it bootstraps the rest.
 You do **not** need glixos itself before installing `glix`; the CLI is just
 a Go binary that drives nix and nixos-rebuild for you.
 
-## Option A — Build `glix` from source
+## Option A — Already on a glixos host
+
+Nothing to do — `nixosModules.glixos` installs `glix` for you. Verify:
+
+```bash
+glix --version
+# → glix <ver> (<commit>)
+```
+
+If a host should *not* ship `glix` (e.g. minimal appliances), set
+`glixos.glix.enable = false` in that host's module.
+
+## Option B — `nix run` (no install)
+
+```bash
+nix run github:powerreddude/glixos -- version
+```
+
+This builds `glix` on the fly and runs it. Drop the `-- version` for
+interactive use, but for repeated work you'll want a real install.
+
+## Option C — `nix shell` (ephemeral)
+
+```bash
+nix shell github:powerreddude/glixos
+glix version
+```
+
+Exit the shell when you're done; nothing is installed permanently.
+
+## Option D — Build `glix` from source
 
 ```bash
 git clone https://github.com/powerreddude/glixos.git
@@ -36,7 +69,7 @@ cd glixos/glix
 go build -o glix ./cmd/glix
 sudo install -m 0755 glix /usr/local/bin/glix
 glix version
-# → 0.1.0-m7
+# → glix 0.1.0-m7 (unknown)
 ```
 
 To install for just your user:
@@ -46,26 +79,8 @@ go install ./cmd/glix
 # ensure $(go env GOBIN) (or $HOME/go/bin) is on $PATH
 ```
 
-## Option B — `nix run`
-
-If you don't want a permanent install:
-
-```bash
-nix run github:powerreddude/glixos?dir=glix -- version
-```
-
-This builds `glix` on the fly and runs it. Drop the `-- version` for
-interactive use, but for repeated work you'll want a real install.
-
-## Option C — Run from a Nix shell
-
-```bash
-nix shell github:powerreddude/glixos?dir=glix
-glix version
-```
-
-`glix shell` exits the shell when you're done; nothing is installed
-permanently.
+The `(unknown)` commit field appears because `go build` doesn't stamp
+the revision; the Nix build does.
 
 ## Verify
 

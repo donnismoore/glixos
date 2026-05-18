@@ -45,28 +45,35 @@ every push.
 
 ## The Nix core
 
+From the repo root:
+
 ```bash
-cd core
-nix flake check          # build the smoke-test host
-nix build .#vm            # produces a runnable QEMU image
-./result/bin/run-*-vm     # boot it
+nix flake check          # builds the smoke-test host AND the glix derivation
+nix build .#vm           # produces a runnable QEMU image
+./result/bin/run-*-vm    # boot it
+nix build .#glix         # produces just the CLI binary
 ```
 
 `nix fmt` formats every Nix file via `nixpkgs-fmt`.
 
 ## End-to-end smoke test
 
-A throwaway, full-stack exercise that's safe to run anywhere:
+A throwaway, full-stack exercise that's safe to run anywhere. Note the
+`--allow-local-core` / `--allow-local-path` flags: by default `glix`
+refuses local-path flake refs so they can't get committed by accident
+(see issue #3); this smoke test opts in because the whole point is to
+build against the local checkout.
 
 ```bash
 TMP=$(mktemp -d)
 go build -o $TMP/glix ./glix/cmd/glix
 
 $TMP/glix init --dir $TMP/repo --host laptop --user me --system x86_64-linux \
-  --core path:$(pwd)/core
+  --allow-local-core --core path:$(pwd)
 
 cd $TMP/repo
-$TMP/glix add --scope home path:$(pwd)/../../examples/pkg-greeting
+$TMP/glix add --scope home --allow-local-path \
+  path:$(pwd)/../../examples/pkg-greeting
 $TMP/glix set greeting config.message="hello from CI"
 $TMP/glix list
 $TMP/glix info

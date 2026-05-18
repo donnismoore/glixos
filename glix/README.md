@@ -64,7 +64,7 @@ test tree.
 ## Run on demand
 
 ```bash
-nix run github:powerreddude/glixos?dir=glix -- version
+nix run github:powerreddude/glixos -- version
 ```
 
 ## Adding a command

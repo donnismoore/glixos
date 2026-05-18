@@ -71,12 +71,25 @@ Short-name resolution via the chain (URI → glixos registry →
 - `glix info` showing repo state and `flake.lock` inputs.
 - `pkg-greeting` consumes `glixConfig.message`.
 
-## Planned
-
 ### M8 — Package the CLI as a derivation
 
-Build `glix` as a Nix package; include it in `modules/core` so every
-glixos system ships with the CLI on `$PATH`.
+The repo root becomes the canonical flake; `core/` is now a plain
+subdirectory of modules + lib (no longer its own flake).
+
+- Root `flake.nix` exposes `packages.${system}.glix` via
+  `buildGoModule`, plus the existing `lib`, `nixosModules`, `vm`
+  outputs.
+- `nixosModules.glixos` is now a function of `inputs`; it applies
+  `overlays.default` (which adds `pkgs.glix`) and installs the CLI via
+  `environment.systemPackages`. Gated by `glixos.glix.enable` (default
+  true) with a `glixos.glix.package` override.
+- `glix --version` / `glix -v` aliases; `glix version` prints
+  `glix <ver> (<commit>)`, with both stamped at build time via
+  ldflags.
+- `defaultCoreURL` in `glix init` is now `github:powerreddude/glixos`
+  (no `?dir=core`).
+
+## Planned
 
 ### M9 — ISO installer
 

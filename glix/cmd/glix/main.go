@@ -7,7 +7,12 @@ import (
 	"os"
 )
 
-const version = "0.1.0-m7"
+// version and commit are stamped at build time via -ldflags '-X main.version=… -X main.commit=…'.
+// Defaults below are what you get from `go build` directly (no Nix wrapper).
+var (
+	version = "0.1.0-m7"
+	commit  = "unknown"
+)
 
 type command struct {
 	name    string
@@ -46,6 +51,10 @@ func main() {
 		usage()
 		return
 	}
+	if name == "--version" || name == "-v" {
+		_ = cmdVersion(nil)
+		return
+	}
 	for _, c := range commands {
 		if c.name == name {
 			if c.run == nil {
@@ -73,7 +82,7 @@ func usage() {
 }
 
 func cmdVersion(_ []string) error {
-	fmt.Println(version)
+	fmt.Printf("glix %s (%s)\n", version, commit)
 	return nil
 }
 
