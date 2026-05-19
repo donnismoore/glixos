@@ -22,6 +22,7 @@ func cmdAdd(args []string) error {
 	dryRun := fs.Bool("dry-run", false, "print planned changes; do not write")
 	regURL := fs.String("registry-url", "", "override registry URL")
 	refresh := fs.Bool("refresh", false, "force refetch of the registry before resolving")
+	allowFileReg := fs.Bool("allow-file-registry", false, "permit file:// registry URLs (off by default to avoid arbitrary local-file reads in shared-tenancy contexts)")
 	noNix := fs.Bool("no-nix-registry", false, "skip the `nix registry list` fallback")
 	allowLocal := fs.Bool("allow-local-path", false, "permit an absolute local-path flake ref (path:/file:/absolute); for testing against a local checkout only")
 	if err := fs.Parse(args); err != nil {
@@ -45,7 +46,7 @@ func cmdAdd(args []string) error {
 	if err != nil {
 		return err
 	}
-	reg, err := loadRegistry(url, *refresh)
+	reg, err := loadRegistry(url, *refresh, *allowFileReg)
 	if err != nil {
 		return err
 	}

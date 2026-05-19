@@ -57,8 +57,9 @@ func TestLoad_FromFileURL(t *testing.T) {
 		t.Fatal(err)
 	}
 	l := &Loader{
-		URL:       "file://" + regPath,
-		CachePath: filepath.Join(dir, "cache.json"),
+		URL:           "file://" + regPath,
+		CachePath:     filepath.Join(dir, "cache.json"),
+		AllowFileURLs: true,
 	}
 	r, err := l.Load()
 	if err != nil {
@@ -69,6 +70,41 @@ func TestLoad_FromFileURL(t *testing.T) {
 	}
 	if _, err := os.Stat(l.CachePath); err != nil {
 		t.Errorf("cache not written: %v", err)
+	}
+}
+
+func TestLoad_FileURL_DeniedByDefault(t *testing.T) {
+	dir := t.TempDir()
+	regPath := filepath.Join(dir, "registry.json")
+	if err := os.WriteFile(regPath, []byte(sampleJSON), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	l := &Loader{
+		URL:       "file://" + regPath,
+		CachePath: filepath.Join(dir, "cache.json"),
+	}
+	if _, err := l.Load(); err == nil {
+		t.Fatal("expected file:// URL to be refused without AllowFileURLs")
+	}
+}
+
+func TestLoad_HTTPBodySizeCap(t *testing.T) {
+	// Serve a body larger than MaxRegistrySize and confirm we reject it
+	// rather than buffering the whole thing.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		big := make([]byte, MaxRegistrySize+1024)
+		for i := range big {
+			big[i] = 'a'
+		}
+		_, _ = w.Write(big)
+	}))
+	defer srv.Close()
+
+	dir := t.TempDir()
+	l := &Loader{URL: srv.URL, CachePath: filepath.Join(dir, "cache.json"), TTL: time.Hour}
+	if _, err := l.Load(); err == nil {
+		t.Fatal("expected oversize registry response to be rejected")
 	}
 }
 

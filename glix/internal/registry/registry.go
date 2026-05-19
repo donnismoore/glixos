@@ -52,6 +52,11 @@ func Parse(data []byte) (*Registry, error) {
 	return &r, nil
 }
 
+// MaxRegistrySize caps a fetched registry response (http or file://).
+// Hostile or compromised servers can otherwise return arbitrarily large
+// bodies and OOM the glix process.
+const MaxRegistrySize = 10 << 20 // 10 MiB
+
 // Loader fetches and caches the registry. Concurrent use is not supported.
 type Loader struct {
 	// URL is either http(s):// or file://; an empty string disables loading.
@@ -64,6 +69,12 @@ type Loader struct {
 	Refresh bool
 	// HTTPTimeout caps each network attempt.
 	HTTPTimeout time.Duration
+	// AllowFileURLs gates the file:// scheme. Defaults to false because a
+	// file:// URL chosen by a less-trusted actor in a shared-tenancy or
+	// privileged context turns the registry fetcher into an arbitrary
+	// local-file read primitive (a confused-deputy hazard). Callers that
+	// genuinely want to load a local registry must opt in.
+	AllowFileURLs bool
 	// Warn is invoked on non-fatal conditions (offline, stale cache, etc.).
 	// May be nil.
 	Warn func(string)
@@ -105,7 +116,7 @@ func (l *Loader) Load() (*Registry, error) {
 		// Cache unreadable — fall through to refetch.
 	}
 
-	data, fetchErr := fetch(l.URL, timeout)
+	data, fetchErr := fetch(l.URL, timeout, l.AllowFileURLs)
 	if fetchErr == nil {
 		r, parseErr := Parse(data)
 		if parseErr != nil {
@@ -139,18 +150,21 @@ func (l *Loader) loadCache() (*Registry, error) {
 	return Parse(b)
 }
 
-func fetch(rawURL string, timeout time.Duration) ([]byte, error) {
+func fetch(rawURL string, timeout time.Duration, allowFileURLs bool) ([]byte, error) {
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return nil, err
 	}
 	switch u.Scheme {
 	case "file":
+		if !allowFileURLs {
+			return nil, fmt.Errorf("file:// registry URLs require --allow-file-registry")
+		}
 		path := u.Path
 		if path == "" {
 			path = u.Opaque
 		}
-		return os.ReadFile(path)
+		return readCapped(path)
 	case "http", "https":
 		client := &http.Client{Timeout: timeout}
 		req, err := http.NewRequest(http.MethodGet, rawURL, nil)
@@ -166,10 +180,35 @@ func fetch(rawURL string, timeout time.Duration) ([]byte, error) {
 		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 			return nil, fmt.Errorf("HTTP %d", resp.StatusCode)
 		}
-		return io.ReadAll(resp.Body)
+		data, err := io.ReadAll(io.LimitReader(resp.Body, MaxRegistrySize+1))
+		if err != nil {
+			return nil, err
+		}
+		if len(data) > MaxRegistrySize {
+			return nil, fmt.Errorf("registry response exceeds %d bytes", MaxRegistrySize)
+		}
+		return data, nil
 	default:
 		return nil, fmt.Errorf("unsupported registry URL scheme %q", u.Scheme)
 	}
+}
+
+// readCapped reads a local file but caps the read at MaxRegistrySize so
+// a hostile or runaway local file cannot OOM the process.
+func readCapped(path string) ([]byte, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	data, err := io.ReadAll(io.LimitReader(f, MaxRegistrySize+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(data) > MaxRegistrySize {
+		return nil, fmt.Errorf("registry response exceeds %d bytes", MaxRegistrySize)
+	}
+	return data, nil
 }
 
 func writeCache(path string, data []byte) error {

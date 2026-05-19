@@ -14,6 +14,7 @@ func cmdSearch(args []string) error {
 	dir := fs.String("dir", "", "user-packages repo root (default: discovered)")
 	regURL := fs.String("registry-url", "", "override registry URL")
 	refresh := fs.Bool("refresh", false, "force refetch of the registry")
+	allowFileReg := fs.Bool("allow-file-registry", false, "permit file:// registry URLs (off by default to avoid arbitrary local-file reads in shared-tenancy contexts)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -35,10 +36,11 @@ func cmdSearch(args []string) error {
 		return err
 	}
 	loader := &registry.Loader{
-		URL:       url,
-		CachePath: cache,
-		Refresh:   *refresh,
-		Warn:      func(s string) { fmt.Fprintln(os.Stderr, "glix search:", s) },
+		URL:           url,
+		CachePath:     cache,
+		Refresh:       *refresh,
+		AllowFileURLs: *allowFileReg,
+		Warn:          func(s string) { fmt.Fprintln(os.Stderr, "glix search:", s) },
 	}
 	reg, err := loader.Load()
 	if err != nil {
