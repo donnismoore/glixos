@@ -36,7 +36,9 @@ func resolveRegistryURL(dir, host, flag string) (string, error) {
 // loadRegistry constructs a Loader and runs it. Returns an empty registry
 // (with no error) when URL is empty, so callers can transparently skip the
 // glixos-registry step in resolution.
-func loadRegistry(url string, refresh bool) (*registry.Registry, error) {
+//
+// allowFileURLs gates the file:// scheme — see registry.Loader.AllowFileURLs.
+func loadRegistry(url string, refresh, allowFileURLs bool) (*registry.Registry, error) {
 	if url == "" {
 		return registry.Empty(), nil
 	}
@@ -45,10 +47,11 @@ func loadRegistry(url string, refresh bool) (*registry.Registry, error) {
 		return nil, err
 	}
 	loader := &registry.Loader{
-		URL:       url,
-		CachePath: cache,
-		Refresh:   refresh,
-		Warn:      func(s string) { fmt.Fprintln(os.Stderr, "glix:", s) },
+		URL:           url,
+		CachePath:     cache,
+		Refresh:       refresh,
+		AllowFileURLs: allowFileURLs,
+		Warn:          func(s string) { fmt.Fprintln(os.Stderr, "glix:", s) },
 	}
 	reg, err := loader.Load()
 	if err != nil {

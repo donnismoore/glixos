@@ -18,6 +18,7 @@
   users.users."@USER@" = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" ];
+    # CHANGE THIS — run `passwd @USER@` on first login.
     initialPassword = "changeme";
   };
 
