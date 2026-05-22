@@ -1,5 +1,5 @@
 module github.com/glixos/glix
 
-go 1.22
+go 1.25
 
 require github.com/BurntSushi/toml v1.4.0
