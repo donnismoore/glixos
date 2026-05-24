@@ -40,7 +40,7 @@
             pname = "glix";
             version = self.shortRev or self.dirtyShortRev or "dev";
             src = ./glix;
-            vendorHash = "sha256-hj1rQJED2llW782lPYYWDD1TgNgHPa0z9nUdj4kWryw=";
+            vendorHash = "sha256-pbA/AlBz3cQYRTMnQ/qBPcinYOKokrBLNhkbRTq54gE=";
             ldflags = [
               "-s"
               "-w"
