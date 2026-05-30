@@ -7,7 +7,7 @@
   description = "glixos example user-packages flake (M2 demo)";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     glixos-core = {
       url = "path:../../core";
