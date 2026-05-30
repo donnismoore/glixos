@@ -6,7 +6,7 @@
 {
   description = "glixos example: home module installing cowsay and a greeting file";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
   outputs = { self, nixpkgs }: {
     # glixConfig is injected by importManifest from [packages.<name>.config]
