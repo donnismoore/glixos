@@ -10,6 +10,7 @@ in
     ./networking.nix
     ./users.nix
     ./locale.nix
+    ../branding
   ];
 
   options.glixos.glix = {
