@@ -12,7 +12,7 @@ import (
 	"github.com/glixos/glix/internal/templates"
 )
 
-const defaultCoreURL = "github:powerreddude/glixos"
+const defaultCoreURL = "github:donnismoore/glixos"
 
 func cmdInit(args []string) error {
 	fs := newFlagSet("init")

@@ -11,7 +11,7 @@ no `nixosModules.default` or `homeModules.default`, glix wraps
 ```bash
 glix add path:/abs/path/to/examples/pkg-hello
 # or, if you've published this repo:
-glix add github:powerreddude/glixos?dir=examples/pkg-hello
+glix add github:donnismoore/glixos?dir=examples/pkg-hello
 ```
 
 By default it lands in `environment.systemPackages` (scope `system`).
@@ -42,5 +42,5 @@ package.
 
 ## See also
 
-- [Flake contract](https://powerreddude.github.io/glixos/contributor/flake-contract)
+- [Flake contract](https://donnismoore.github.io/glixos/contributor/flake-contract)
 - [pkg-greeting](../pkg-greeting/) — the `homeModules.default` path.

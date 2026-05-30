@@ -50,7 +50,7 @@ as the `inputs.<name>` key in the generated `flake.nix`.
 3. **`nix registry list`** — falls back to the user's Nix flake
    registry.
 
-See [Resolver chain](https://powerreddude.github.io/glixos/contributor/resolver)
+See [Resolver chain](https://donnismoore.github.io/glixos/contributor/resolver)
 for the full algorithm.
 
 ## Default URL
@@ -59,7 +59,7 @@ for the full algorithm.
 
 ```toml
 [registry]
-url = "https://raw.githubusercontent.com/powerreddude/glixos/main/registry/registry.json"
+url = "https://raw.githubusercontent.com/donnismoore/glixos/main/registry/registry.json"
 ttl_hours = 24
 ```
 
@@ -97,6 +97,6 @@ running `glix add`.
 
 ## See also
 
-- [Registry (user docs)](https://powerreddude.github.io/glixos/user/registry)
-- [Resolver chain (contributor docs)](https://powerreddude.github.io/glixos/contributor/resolver)
-- [ADR-004 — Registry-style resolution](https://powerreddude.github.io/glixos/adr/ADR-004-registry-resolution)
+- [Registry (user docs)](https://donnismoore.github.io/glixos/user/registry)
+- [Resolver chain (contributor docs)](https://donnismoore.github.io/glixos/contributor/resolver)
+- [ADR-004 — Registry-style resolution](https://donnismoore.github.io/glixos/adr/ADR-004-registry-resolution)

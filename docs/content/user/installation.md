@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Installation
 
-glixos ships everything from one flake at `github:powerreddude/glixos`:
+glixos ships everything from one flake at `github:donnismoore/glixos`:
 
 - **`glix`** — the Go CLI you run from your shell.
 - **`nixosModules.glixos`** — the OS layer, pulled in as a flake input
@@ -46,7 +46,7 @@ If a host should *not* ship `glix` (e.g. minimal appliances), set
 ## Option B — `nix run` (no install)
 
 ```bash
-nix run github:powerreddude/glixos -- version
+nix run github:donnismoore/glixos -- version
 ```
 
 This builds `glix` on the fly and runs it. Drop the `-- version` for
@@ -55,7 +55,7 @@ interactive use, but for repeated work you'll want a real install.
 ## Option C — `nix shell` (ephemeral)
 
 ```bash
-nix shell github:powerreddude/glixos
+nix shell github:donnismoore/glixos
 glix version
 ```
 
@@ -64,7 +64,7 @@ Exit the shell when you're done; nothing is installed permanently.
 ## Option D — Build `glix` from source
 
 ```bash
-git clone https://github.com/powerreddude/glixos.git
+git clone https://github.com/donnismoore/glixos.git
 cd glixos/glix
 go build -o glix ./cmd/glix
 sudo install -m 0755 glix /usr/local/bin/glix

@@ -16,11 +16,11 @@ It's the second step in the resolver chain (after URI passthrough, before
   "schema": 1,
   "packages": {
     "hello": {
-      "flake": "github:powerreddude/glixos?dir=examples/pkg-hello",
+      "flake": "github:donnismoore/glixos?dir=examples/pkg-hello",
       "description": "GNU Hello example"
     },
     "greeting": {
-      "flake": "github:powerreddude/glixos?dir=examples/pkg-greeting",
+      "flake": "github:donnismoore/glixos?dir=examples/pkg-greeting",
       "description": "Demo home module"
     }
   }
@@ -36,7 +36,7 @@ Per host, in `glix.toml`:
 
 ```toml
 [settings]
-registry_url = "https://raw.githubusercontent.com/powerreddude/glixos/main/registry/registry.json"
+registry_url = "https://raw.githubusercontent.com/donnismoore/glixos/main/registry/registry.json"
 ```
 
 Per invocation:

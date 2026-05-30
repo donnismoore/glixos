@@ -16,7 +16,7 @@
 | | |
 |---|---|
 | **Status** | Pre-release. CLI version `0.1.0-m7`. Schema `1`. |
-| **Docs** | [powerreddude.github.io/glixos](https://powerreddude.github.io/glixos/) |
+| **Docs** | [donnismoore.github.io/glixos](https://donnismoore.github.io/glixos/) |
 | **License** | [GPLv3](./LICENSE) |
 
 ---
@@ -31,10 +31,10 @@ into `environment.systemPackages`; rebuild and you're done. To get
 
 ```bash
 # Run on demand (no install).
-nix run github:powerreddude/glixos -- version
+nix run github:donnismoore/glixos -- version
 
 # Build from source.
-git clone https://github.com/powerreddude/glixos.git
+git clone https://github.com/donnismoore/glixos.git
 cd glixos/glix
 go build -o glix ./cmd/glix
 sudo install -m 0755 glix /usr/local/bin/glix
@@ -62,10 +62,10 @@ first commit.
 
 ```bash
 cd ~/.config/glixos
-glix add github:powerreddude/glixos?dir=examples/pkg-hello
+glix add github:donnismoore/glixos?dir=examples/pkg-hello
 glix list
 # NAME      SCOPE   STATE    USER  FLAKE
-# pkg-hello system  enabled        github:powerreddude/glixos?dir=examples/pkg-hello
+# pkg-hello system  enabled        github:donnismoore/glixos?dir=examples/pkg-hello
 ```
 
 ### 4. Rebuild
@@ -82,7 +82,7 @@ sudo nixos-rebuild --rollback switch
 glix rollback
 ```
 
-The [Quickstart guide](https://powerreddude.github.io/glixos/user/quickstart)
+The [Quickstart guide](https://donnismoore.github.io/glixos/user/quickstart)
 goes into more detail.
 
 ---
@@ -111,19 +111,19 @@ Each subdirectory has its own README explaining its role.
 
 The full docs are deployed to GitHub Pages:
 
-**[powerreddude.github.io/glixos](https://powerreddude.github.io/glixos/)**
+**[donnismoore.github.io/glixos](https://donnismoore.github.io/glixos/)**
 
 Two paths:
 
-- **[Users](https://powerreddude.github.io/glixos/user/getting-started)** —
+- **[Users](https://donnismoore.github.io/glixos/user/getting-started)** —
   install, manage packages, share modules between hosts, per-package
   config, rollback, GC, troubleshooting.
-- **[Contributors](https://powerreddude.github.io/glixos/contributor/overview)** —
+- **[Contributors](https://donnismoore.github.io/glixos/contributor/overview)** —
   architecture, design principles, codebase tour, CLI internals, the
   Nix layer, build & test, release process.
 
 ADRs live alongside the docs at
-[powerreddude.github.io/glixos/adr](https://powerreddude.github.io/glixos/adr/).
+[donnismoore.github.io/glixos/adr](https://donnismoore.github.io/glixos/adr/).
 
 To run the docs locally:
 

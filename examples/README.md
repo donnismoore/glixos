@@ -29,5 +29,5 @@ glix rebuild switch
 
 ## See also
 
-- [Packages (user docs)](https://powerreddude.github.io/glixos/user/packages)
-- [Flake contract (contributor docs)](https://powerreddude.github.io/glixos/contributor/flake-contract)
+- [Packages (user docs)](https://donnismoore.github.io/glixos/user/packages)
+- [Flake contract (contributor docs)](https://donnismoore.github.io/glixos/contributor/flake-contract)

@@ -9,10 +9,10 @@
 # host can re-claim plain NixOS branding if it wants to.
 { lib, config, ... }:
 let
-  homeUrl    = "https://powerreddude.github.io/glixos/";
-  supportUrl = "https://powerreddude.github.io/glixos/user/getting-started";
-  docsUrl    = "https://powerreddude.github.io/glixos/";
-  bugUrl     = "https://github.com/powerreddude/glixos/issues";
+  homeUrl    = "https://donnismoore.github.io/glixos/";
+  supportUrl = "https://donnismoore.github.io/glixos/user/getting-started";
+  docsUrl    = "https://donnismoore.github.io/glixos/";
+  bugUrl     = "https://github.com/donnismoore/glixos/issues";
 in
 {
   options.glixos.meta = {

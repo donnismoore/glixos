@@ -2,6 +2,6 @@
 
 To report a security vulnerability, please use GitHub's private
 vulnerability reporting:
-https://github.com/powerreddude/glixos/security/advisories/new
+https://github.com/donnismoore/glixos/security/advisories/new
 
 Do not file a public issue for security reports.

@@ -49,7 +49,7 @@
             ];
             meta = with pkgs.lib; {
               description = "glixos manifest-driven package CLI";
-              homepage = "https://github.com/powerreddude/glixos";
+              homepage = "https://github.com/donnismoore/glixos";
               license = licenses.gpl3Only;
               mainProgram = "glix";
               platforms = platforms.linux;
