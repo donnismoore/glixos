@@ -41,7 +41,7 @@ sub-commits within a milestone — a milestone is the atomic unit on
 
 Pushing to `main` triggers `.github/workflows/docs.yml`, which builds
 the Docusaurus site under `docs/` and deploys it to GitHub Pages at
-[powerreddude.github.io/glixos](https://powerreddude.github.io/glixos).
+[donnismoore.github.io/glixos](https://donnismoore.github.io/glixos).
 
 If the workflow fails, the site stays on the last successful build.
 Check the Actions tab for the build log.

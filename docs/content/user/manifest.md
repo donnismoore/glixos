@@ -96,7 +96,7 @@ primary_user  = "alice"
 registry_url  = "https://raw.githubusercontent.com/glixos/registry/main/registry.json"
 
 [packages.pkg-hello]
-flake   = "github:powerreddude/glixos?dir=examples/pkg-hello"
+flake   = "github:donnismoore/glixos?dir=examples/pkg-hello"
 scope   = "system"
 enabled = true
 
@@ -107,7 +107,7 @@ enabled = true
 pin     = "da5ad661ba4e5ef59ba743f0d112cbc30e474f32"
 
 [packages.greeting]
-flake   = "github:powerreddude/glixos?dir=examples/pkg-greeting"
+flake   = "github:donnismoore/glixos?dir=examples/pkg-greeting"
 scope   = "home"
 enabled = true
 user    = "alice"

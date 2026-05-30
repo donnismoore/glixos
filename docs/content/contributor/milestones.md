@@ -86,7 +86,7 @@ subdirectory of modules + lib (no longer its own flake).
 - `glix --version` / `glix -v` aliases; `glix version` prints
   `glix <ver> (<commit>)`, with both stamped at build time via
   ldflags.
-- `defaultCoreURL` in `glix init` is now `github:powerreddude/glixos`
+- `defaultCoreURL` in `glix init` is now `github:donnismoore/glixos`
   (no `?dir=core`).
 
 ## Planned

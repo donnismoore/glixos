@@ -15,7 +15,7 @@ reads `glixConfig.message`, which is populated from
 ```bash
 glix add --scope=home path:/abs/path/to/examples/pkg-greeting
 # or
-glix add --scope=home github:powerreddude/glixos?dir=examples/pkg-greeting
+glix add --scope=home github:donnismoore/glixos?dir=examples/pkg-greeting
 
 # Set the greeting text:
 glix set pkg-greeting config.message="Hello, world!"
@@ -54,6 +54,6 @@ when no `[packages.<name>.config]` table exists in the manifest.
 
 ## See also
 
-- [Flake contract](https://powerreddude.github.io/glixos/contributor/flake-contract)
-- [Per-package config](https://powerreddude.github.io/glixos/user/config)
+- [Flake contract](https://donnismoore.github.io/glixos/contributor/flake-contract)
+- [Per-package config](https://donnismoore.github.io/glixos/user/config)
 - [pkg-hello](../pkg-hello/) — the fallback (no-module) path.

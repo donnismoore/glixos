@@ -121,5 +121,5 @@ Standard Nix tooling works against glixos repos without modification.
 
 ## More
 
-Open an issue at [github.com/powerreddude/glixos/issues](https://github.com/powerreddude/glixos/issues). Include
+Open an issue at [github.com/donnismoore/glixos/issues](https://github.com/donnismoore/glixos/issues). Include
 `glix doctor` output and the contents of the relevant `hosts/<host>/glix.toml`.

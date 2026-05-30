@@ -1,6 +1,6 @@
 // @ts-check
 // Docusaurus configuration for the glixos documentation site.
-// Deployed to https://powerreddude.github.io/glixos/ via GitHub Pages.
+// Deployed to https://donnismoore.github.io/glixos/ via GitHub Pages.
 
 import { themes as prismThemes } from 'prism-react-renderer';
 
@@ -10,10 +10,10 @@ const config = {
   tagline: 'Modular, flake-driven NixOS with a manifest you can read.',
   favicon: 'img/favicon.svg',
 
-  url: 'https://powerreddude.github.io',
+  url: 'https://donnismoore.github.io',
   baseUrl: '/glixos/',
 
-  organizationName: 'powerreddude',
+  organizationName: 'donnismoore',
   projectName: 'glixos',
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
@@ -41,7 +41,7 @@ const config = {
           routeBasePath: '/',
           sidebarPath: './sidebars.js',
           editUrl:
-            'https://github.com/powerreddude/glixos/edit/main/docs/',
+            'https://github.com/donnismoore/glixos/edit/main/docs/',
         },
         blog: false,
         theme: {
@@ -84,7 +84,7 @@ const config = {
             label: 'ADRs',
           },
           {
-            href: 'https://github.com/powerreddude/glixos',
+            href: 'https://github.com/donnismoore/glixos',
             label: 'GitHub',
             position: 'right',
           },
@@ -106,11 +106,11 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/powerreddude/glixos',
+                href: 'https://github.com/donnismoore/glixos',
               },
               {
                 label: 'Issues',
-                href: 'https://github.com/powerreddude/glixos/issues',
+                href: 'https://github.com/donnismoore/glixos/issues',
               },
             ],
           },

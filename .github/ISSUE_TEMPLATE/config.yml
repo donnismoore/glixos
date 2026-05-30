@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation
-    url: https://powerreddude.github.io/glixos/
+    url: https://donnismoore.github.io/glixos/
     about: User guide, contributor guide, and ADRs.
   - name: Discussions
-    url: https://github.com/powerreddude/glixos/discussions
+    url: https://github.com/donnismoore/glixos/discussions
     about: Questions, ideas, and conversations that aren't bug reports yet.

@@ -64,7 +64,7 @@ test tree.
 ## Run on demand
 
 ```bash
-nix run github:powerreddude/glixos -- version
+nix run github:donnismoore/glixos -- version
 ```
 
 ## Adding a command
@@ -75,11 +75,11 @@ nix run github:powerreddude/glixos -- version
    `TakeSnapshot` → mutate → on any failure `Restore` → on success
    `r.Commit(...)`.
 
-See the [CLI internals](https://powerreddude.github.io/glixos/contributor/cli-internals)
+See the [CLI internals](https://donnismoore.github.io/glixos/contributor/cli-internals)
 guide for the full pattern.
 
 ## See also
 
-- [Architecture](https://powerreddude.github.io/glixos/contributor/architecture)
-- [Codebase tour](https://powerreddude.github.io/glixos/contributor/codebase-tour)
-- [Command reference (user docs)](https://powerreddude.github.io/glixos/user/commands)
+- [Architecture](https://donnismoore.github.io/glixos/contributor/architecture)
+- [Codebase tour](https://donnismoore.github.io/glixos/contributor/codebase-tour)
+- [Command reference (user docs)](https://donnismoore.github.io/glixos/user/commands)

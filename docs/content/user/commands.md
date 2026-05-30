@@ -26,7 +26,7 @@ glix init [--host=<name>] [--user=<name>] [--system=<tuple>]
 | `--user`   | `$USER`                          | Primary user (`Settings.primary_user`)   |
 | `--system` | `x86_64-linux`                   | Nix system tuple                         |
 | `--dir`    | `$XDG_CONFIG_HOME/glixos`        | Repo root                                |
-| `--core`   | `github:powerreddude/glixos`     | glixos repo flake URL                    |
+| `--core`   | `github:donnismoore/glixos`     | glixos repo flake URL                    |
 
 `glix init` is **idempotent for new hosts**. Running it again with a
 different `--host` on an existing repo adds that host without touching the

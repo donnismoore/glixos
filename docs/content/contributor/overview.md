@@ -78,7 +78,7 @@ shells out to glix.
 
 ## Communication
 
-- Issues: [github.com/powerreddude/glixos/issues](https://github.com/powerreddude/glixos/issues)
+- Issues: [github.com/donnismoore/glixos/issues](https://github.com/donnismoore/glixos/issues)
 - PRs: reference the relevant ADR(s) in the description. If you're
   introducing a new design choice, file the ADR with the PR.
 

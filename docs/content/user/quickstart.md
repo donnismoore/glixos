@@ -27,7 +27,7 @@ initialized glixos user-packages repo at /home/alice/.config/glixos
   host:   laptop
   user:   alice
   system: x86_64-linux
-  core:   github:powerreddude/glixos
+  core:   github:donnismoore/glixos
 ```
 
 Flags:
@@ -38,13 +38,13 @@ Flags:
 | `--user`    | `$USER`                          | Primary user for home-scope packages          |
 | `--system`  | `x86_64-linux`                   | Nix system tuple for this host                |
 | `--dir`     | `$XDG_CONFIG_HOME/glixos`        | Repo root                                     |
-| `--core`    | `github:powerreddude/glixos`     | Flake URL for the glixos repo                 |
+| `--core`    | `github:donnismoore/glixos`     | Flake URL for the glixos repo                 |
 
 ## 2. Add a package
 
 ```bash
 cd ~/.config/glixos
-glix add github:powerreddude/glixos?dir=examples/pkg-hello
+glix add github:donnismoore/glixos?dir=examples/pkg-hello
 ```
 
 What just happened:
@@ -56,7 +56,7 @@ What just happened:
 4. A git commit was created.
 
 ```
-added pkg-hello -> github:powerreddude/glixos?dir=examples/pkg-hello (scope=system) to host laptop
+added pkg-hello -> github:donnismoore/glixos?dir=examples/pkg-hello (scope=system) to host laptop
 staged. run `glix rebuild` to apply.
 ```
 
@@ -66,7 +66,7 @@ system is not rebuilt yet.
 Want to apply immediately? Add `--apply`:
 
 ```bash
-glix add --apply github:powerreddude/glixos?dir=examples/pkg-hello
+glix add --apply github:donnismoore/glixos?dir=examples/pkg-hello
 ```
 
 ## 3. Inspect
@@ -77,7 +77,7 @@ glix list
 
 ```
 NAME      SCOPE   STATE    USER  FLAKE
-pkg-hello system  enabled        github:powerreddude/glixos?dir=examples/pkg-hello
+pkg-hello system  enabled        github:donnismoore/glixos?dir=examples/pkg-hello
 ```
 
 ```bash
@@ -86,7 +86,7 @@ glix show pkg-hello
 
 ```
 name    pkg-hello
-flake   github:powerreddude/glixos?dir=examples/pkg-hello
+flake   github:donnismoore/glixos?dir=examples/pkg-hello
 scope   system
 state   enabled
 host    laptop
@@ -103,10 +103,10 @@ head    glix add laptop: pkg-hello (...)
 hosts:
   laptop       system=x86_64-linux primary_user=alice packages=1/1 enabled
 flake.lock:
-  glixos-core          github:powerreddude/glixos
+  glixos-core          github:donnismoore/glixos
   home-manager         github:nix-community/home-manager @ ...
   nixpkgs              github:NixOS/nixpkgs @ ...
-  pkg-hello            github:powerreddude/glixos
+  pkg-hello            github:donnismoore/glixos
 ```
 
 ## 4. Rebuild
