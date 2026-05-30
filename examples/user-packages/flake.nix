@@ -10,7 +10,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     glixos-core = {
-      url = "path:../../core";
+      url = "path:../..";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "path": "../../core",
+        "path": "../..",
         "type": "path"
       },
       "original": {
-        "path": "../../core",
+        "path": "../..",
         "type": "path"
       },
       "parent": []
