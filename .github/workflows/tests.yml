@@ -41,3 +41,26 @@ jobs:
 
       - name: govulncheck
         run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
+  nix-check:
+    name: nix flake check (eval)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      # Eval-only: proves every flake output (incl. nixosConfigurations and
+      # the example bundle) still evaluates and its inputs resolve, without
+      # the cost of building a full system. Catches input/path drift like the
+      # de-flake that left examples/user-packages pointing at a dead path.
+      # Full builds / smoke tests are tracked in #26.
+      - name: Check root flake
+        run: nix flake check --no-build
+
+      - name: Check user-packages example
+        run: nix flake check --no-build ./examples/user-packages
